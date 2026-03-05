@@ -25,31 +25,34 @@ Sky Takeout is a comprehensive food delivery platform built with Spring Boot. Th
 ## 🏗️ System Architecture
 
 ```
-sky-takeout/
-├── sky-common/           # Common utilities and constants
-│   ├── src/main/java/com/sky/constant/
-│   ├── src/main/java/com/sky/exception/
-│   ├── src/main/java/com/sky/properties/
-│   └── src/main/java/com/sky/utils/
-│
-├── sky-pojo/             # POJO classes
-│   ├── src/main/java/com/sky/dto/      # Data Transfer Objects
-│   ├── src/main/java/com/sky/entity/   # Entity classes
-│   └── src/main/java/com/sky/vo/       # View Objects
-│
-├── sky-server/           # Main server application
-│   ├── src/main/java/com/sky/
-│   │   ├── controller/    # REST controllers
-│   │   ├── service/       # Business logic
-│   │   ├── mapper/        # MyBatis interfaces
-│   │   ├── config/        # Configuration classes
-│   │   ├── interceptor/   # Interceptors
-│   │   └── task/          # Scheduled tasks
-│   └── src/main/resources/
-│       ├── mapper/        # MyBatis XML mappers
-│       └── application.yml # Application config
-│
-└── pom.xml                # Parent Maven configuration
+┌─────────────────────────────────────┐
+│         Client Layer                │
+├───────────────┬─────────────────────┤
+│  Admin Web    │    User App         │
+│  (Management) │    (Mobile)         │
+└───────────────┴─────────────────────┘
+              │
+┌─────────────▼─────────────────────┐
+│         Gateway Layer              │
+│    Nginx / API Gateway             │
+└─────────────┬─────────────────────┘
+              │
+┌─────────────▼─────────────────────┐
+│         Service Layer              │
+│    ┌───────────────────────────┐  │
+│    │   Spring Boot Application │  │
+│    │   - Controllers           │  │
+│    │   - Services              │  │
+│    │   - Repositories          │  │
+│    └───────────────────────────┘  │
+└─────────────┬─────────────────────┘
+              │
+┌─────────────▼─────────────────────┐
+│         Data Layer                 │
+│    ┌───────┐  ┌───────┐  ┌──────┐ │
+│    │ MySQL │  │ Redis │  │ OSS  │ │
+│    └───────┘  └───────┘  └──────┘ │
+└─────────────────────────────────────┘
 ```
 
 ## 🛠️ Technology Stack
