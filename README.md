@@ -80,6 +80,7 @@ Sky Takeout is a comprehensive food delivery platform built with Spring Boot. Th
 - **HttpClient**: HTTP communication
 
 ## 📦 Project Structure
+```
 sky-takeout/
 ├── sky-common/ # Common utilities and constants
 │ ├── src/main/java/com/sky/constant/
@@ -105,8 +106,7 @@ sky-takeout/
 │ └── application.yml # Application config
 │
 └── pom.xml # Parent Maven configuration
-
-text
+```
 
 ## 🚀 Getting Started
 
