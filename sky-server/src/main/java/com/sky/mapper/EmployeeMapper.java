@@ -26,4 +26,8 @@ public interface EmployeeMapper {
 
 
     Page<Employee> list();
+
+    void update(Employee employee);
+
+    Employee getById(Long id);
 }

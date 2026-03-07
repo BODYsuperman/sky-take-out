@@ -112,6 +112,46 @@ public class EmployeeController {
     }
 
 
+    @ApiOperation("Employee enable or disable API")
+    @PostMapping("/status/{status}")
+    public Result enableOrDisable(@PathVariable Integer status, Long id)
+    {
+
+        log.info("Employee status id：{}", status , id);
+
+
+        employeeService.enableOrDisable(status, id);
+
+        return Result.success();
+    }
+    @ApiOperation("Get Employee by id API")
+    @GetMapping("/{id}")
+    public Result<Employee> getById(@PathVariable Long id)
+    {
+
+        log.info("Employee id：{}", id);
+
+
+        Employee employee =  employeeService.getById(id);
+
+        return Result.success(employee);
+    }
+
+    @ApiOperation("Edit Employee API")
+    @PutMapping
+    public Result<Employee> update(@RequestBody EmployeeDTO dto)
+    {
+
+        log.info("Update Employee{}", dto);
+
+
+        employeeService.update(dto);
+
+        return Result.success();
+    }
+
+
+
 
 
 
