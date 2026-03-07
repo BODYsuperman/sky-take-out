@@ -24,7 +24,10 @@ public interface EmployeeMapper {
     void insert(Employee employee);
 
 
-
+    /**
+     * 查询员工列表
+     * @return
+     */
     Page<Employee> list();
 
     void update(Employee employee);
