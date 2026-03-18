@@ -53,7 +53,7 @@ public class DishController {
     @ApiOperation("Delete Dish Management API")
     public  Result delete(@RequestParam List<Long> ids){
 
-        log.info("delete dishes", ids);
+        log.info("delete dishes {}", ids);
         dishService.delete(ids);
         return  Result.success();
     }
