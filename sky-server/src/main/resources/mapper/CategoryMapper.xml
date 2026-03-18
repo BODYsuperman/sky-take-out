@@ -54,8 +54,8 @@
     <select id="list" resultType="com.sky.entity.Category">
         select * from category
         <where>
-            <if test="name != null and name != ''">
-                name like concat('%',#{name},'%')
+            <if test="type != null">
+                type = #{type}
             </if>
         </where>
         order by update_time desc

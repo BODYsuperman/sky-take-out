@@ -43,10 +43,10 @@ public class CategoryServiceImpl implements CategoryService {
 
 // 3. 补充公共字段（只set，不重新new对象）
         category.setStatus(StatusConstant.DISABLE);
-        category.setCreateTime(LocalDateTime.now());
-        category.setUpdateTime(LocalDateTime.now());
-        category.setCreateUser(BaseContext.getCurrentId());
-        category.setUpdateUser(BaseContext.getCurrentId());
+//        category.setCreateTime(LocalDateTime.now());
+//        category.setUpdateTime(LocalDateTime.now());
+//        category.setCreateUser(BaseContext.getCurrentId());
+//        category.setUpdateUser(BaseContext.getCurrentId());
 
 // 4. 插入数据库（此时category有name/type/sort + 公共字段）
         categoryMapper.insert(category);
@@ -74,8 +74,8 @@ public class CategoryServiceImpl implements CategoryService {
         BeanUtils.copyProperties(dto, category);
 
         //3. supplement common fields (only set, do not re-new the object)
-        category.setUpdateTime(LocalDateTime.now());
-        category.setUpdateUser(BaseContext.getCurrentId());
+//        category.setUpdateTime(LocalDateTime.now());
+//        category.setUpdateUser(BaseContext.getCurrentId());
 
         //4. update database (at this time, category has name/type/sort + common fields)
         categoryMapper.update(category);
@@ -107,8 +107,8 @@ public class CategoryServiceImpl implements CategoryService {
         Category category =  Category.builder()
                 .id(id)
                 .status(status)
-                .updateTime(LocalDateTime.now())
-                .updateUser(BaseContext.getCurrentId())
+//                .updateTime(LocalDateTime.now())
+//                .updateUser(BaseContext.getCurrentId())
                 .build();
 
         categoryMapper.update(category);
@@ -116,7 +116,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> list(Integer type) {
-       return categoryMapper.list(type);
+
+        return categoryMapper.list(type);
     }
 
 
