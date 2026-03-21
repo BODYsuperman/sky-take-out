@@ -4,7 +4,7 @@
 <mapper namespace="com.sky.mapper.SetmealMapper">
 
 
-    <insert id="insert">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into setmeal (
             category_id,  -- 分类id
             name,         -- 套餐名称
@@ -67,15 +67,22 @@
            </set>
         where id = #{id}
     </update>
-    <select id="list" resultType="com.sky.entity.Setmeal">
-
-        select * from setmeal
+    <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
+        SELECT s.*, c.name as categoryName
+        FROM setmeal s
+        LEFT JOIN category c ON s.category_id = c.id
         <where>
             <if test="name != null and name != ''">
-                name like concat('%',#{name},'%')
+                AND s.name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND s.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND s.status = #{status}
             </if>
         </where>
-        order by update_time desc
+        ORDER BY s.create_time DESC
     </select>
     <select id="getById" resultType="com.sky.entity.Setmeal">
 

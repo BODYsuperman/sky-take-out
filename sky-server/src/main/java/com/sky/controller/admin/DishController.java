@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 
+import com.sky.constant.StatusConstant;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
@@ -89,10 +90,22 @@ public class DishController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("菜品起售停售")
-    public Result<String> startOrStop(@PathVariable Integer status, Long id){
+    public Result<String> startOrStop(@PathVariable Integer status, @RequestParam  Long id){
         dishService.startOrStop(status,id);
         return Result.success();
     }
+
+    /**
+     * 根据分类ID查询菜品列表（用于前端选择菜品）
+     */
+    @GetMapping("/list")
+    @ApiOperation("根据分类ID查询菜品列表")
+    public Result<List<Dish>> list(Long categoryId) {
+        log.info("根据分类ID查询菜品列表：{}", categoryId);
+        List<Dish> list = dishService.list(categoryId);
+        return Result.success(list);
+    }
+
 
 
 }

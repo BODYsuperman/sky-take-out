@@ -33,8 +33,13 @@ public interface DishMapper {
     void insert(Dish dish);
 
 
+    /**
+     * 分页查询菜品
+     */
+    Page<DishVO> pageQuery(DishPageQueryDTO pageQueryDTO);
 
-    Page<DishVO> list(DishPageQueryDTO dishPageQueryDTO);
+
+    List<Dish> list(Dish dish);
 
     Dish selectById(Long id);
 

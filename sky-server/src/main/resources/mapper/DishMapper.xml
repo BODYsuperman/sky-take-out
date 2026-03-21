@@ -4,5 +4,50 @@
 <mapper namespace="com.sky.mapper.DishMapper">
 
 
+    <!-- 条件查询菜品列表 -->
+    <select id="list" resultType="com.sky.entity.Dish">
+        SELECT * FROM dish
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+
+    <!-- 分页查询菜品 -->
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        SELECT d.*, c.name AS categoryName
+        FROM dish d
+        LEFT JOIN category c ON d.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                AND d.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                AND d.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND d.status = #{status}
+            </if>
+        </where>
+        ORDER BY d.create_time DESC
+    </select>
+
+    <update id="update">
+        UPDATE dish
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
 
 </mapper>
