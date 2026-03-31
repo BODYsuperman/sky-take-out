@@ -64,7 +64,7 @@ public class DishController {
     public  Result getById(@PathVariable Long id){
         log.info("Query result display feature {} ",id);
 
-        DishVO dishVO =  dishService.getById(id);
+        DishVO dishVO =  dishService.getByIdWithFlavor(id);
         return Result.success(dishVO);
 
     }
@@ -79,6 +79,17 @@ public class DishController {
 
         return  Result.success();
 
+    }
+
+    @PostMapping("/status/{status}")
+    @ApiOperation("start or stop")
+    public  Result<String> startOrStop(@PathVariable("status") Integer status, Long id){
+
+        log.info("Dish status, {}", status, id);
+
+        dishService.startOrStop(status, id);
+
+        return Result.success();
     }
 
 

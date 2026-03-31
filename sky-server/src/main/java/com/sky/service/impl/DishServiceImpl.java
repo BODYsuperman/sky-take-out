@@ -66,7 +66,7 @@ public class DishServiceImpl implements DishService {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
         //map list cast to Page
 
-        Page<DishVO> page = dishMapper.list(dishPageQueryDTO);
+        Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
 
         return new PageResult(page.getTotal(), page.getResult());
     }
@@ -78,7 +78,7 @@ public class DishServiceImpl implements DishService {
         //1.judege if dish status is enabled
 
         ids.forEach(id->{
-            Dish dish =  dishMapper.selectById(id);
+            Dish dish =  dishMapper.getByDishId(id);
 
             if(dish.getStatus() == StatusConstant.ENABLE){
                 throw  new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
@@ -99,16 +99,16 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public DishVO getById(Long id) {
+    public DishVO getByIdWithFlavor(Long id) {
+
+
+        Dish dish = dishMapper.getByDishId(id);
+
+        List<DishFlavor> dishFlavors =  dishFlavorMapper.getByDishId(id);
 
 
         DishVO dishVO = new DishVO();
-
-        Dish dish = dishMapper.selectById(id);
         BeanUtils.copyProperties(dish, dishVO);
-
-        List<DishFlavor> dishFlavors =  dishFlavorMapper.selectByDishId(id);
-
         dishVO.setFlavors(dishFlavors);
 
         return dishVO;
@@ -124,7 +124,7 @@ public class DishServiceImpl implements DishService {
         dishMapper.update(dish);
 
         //first delete if not delete then the operations like update delete insert is complex
-        dishFlavorMapper.deleteByDishId(dishDTO.getId());
+       dishFlavorMapper.deleteByDishId(dishDTO.getId());
 
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if(flavors!= null && !flavors.isEmpty()){
@@ -137,5 +137,13 @@ public class DishServiceImpl implements DishService {
 
 
 
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+
+
+        Dish dish = Dish.builder().id(id).status(status).build();
+        dishMapper.update(dish);
     }
 }
