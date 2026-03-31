@@ -34,12 +34,14 @@ public interface DishMapper {
 
 
 
-    Page<DishVO> list(DishPageQueryDTO dishPageQueryDTO);
+    Page<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
 
-    Dish selectById(Long id);
+    Dish getByDishId(Long id);
 
-    void deleteBatch(List<Long> ids);
+    void deleteBatch(List<Long> dishIds);
 
-    @AutoFill(OperationType.INSERT)
+    @AutoFill(OperationType.UPDATE)
     void update(Dish dish);
+
+
 }
