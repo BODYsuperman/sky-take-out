@@ -62,10 +62,10 @@ public class DishController {
 
     @GetMapping("/{id}")
     @ApiOperation("Get dish according to id")
-    public  Result getById(@PathVariable Long id){
+    public  Result<DishVO> getById(@PathVariable Long id){
         log.info("Query result display feature {} ",id);
 
-        DishVO dishVO =  dishService.getById(id);
+        DishVO dishVO = dishService.getByIdWithFlavor(id);
         return Result.success(dishVO);
 
     }

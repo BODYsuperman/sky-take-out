@@ -42,12 +42,34 @@
     </select>
 
     <update id="update">
-        UPDATE dish
+        update dish
         <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="description != null">description = #{description},</if>
             <if test="status != null">status = #{status},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
         </set>
-        WHERE id = #{id}
+        where id =#{id}
     </update>
+
+    <!--    根据套餐id查询菜品-->
+    <select id="getBySetmealId" resultType="com.sky.entity.Dish">
+        select d.*
+        from dish d,
+        setmeal_dish sd
+        where d.id = sd.dish_id
+        and sd.setmeal_id = #{id}
+    </select>
+
+    <!--    获取菜品-->
+    <select id="selectById" resultType="com.sky.entity.Dish">
+        select *
+        from dish where id=#{id};
+    </select>
+
 
 </mapper>

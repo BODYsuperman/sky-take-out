@@ -15,7 +15,8 @@ public interface DishFlavorMapper {
 
     void deleteBatch(List<Long> dishIds);
 
-    List<DishFlavor> selectByDishId(Long dishId);
+   //  根据菜品id查询口味数据
+    List<DishFlavor> getByDishId(Long id);
 
 
     void deleteByDishId(Long dishId);

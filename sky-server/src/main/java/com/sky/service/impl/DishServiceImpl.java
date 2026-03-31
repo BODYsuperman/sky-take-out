@@ -106,7 +106,7 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public DishVO getById(Long id) {
+    public DishVO getByIdWithFlavor(Long id) {
 
 
         DishVO dishVO = new DishVO();
@@ -114,7 +114,7 @@ public class DishServiceImpl implements DishService {
         Dish dish = dishMapper.selectById(id);
         BeanUtils.copyProperties(dish, dishVO);
 
-        List<DishFlavor> dishFlavors =  dishFlavorMapper.selectByDishId(id);
+        List<DishFlavor> dishFlavors =  dishFlavorMapper.getByDishId(id);
 
         dishVO.setFlavors(dishFlavors);
 
