@@ -32,9 +32,12 @@ public interface DishMapper {
             "#{updateUser})")
     void insert(Dish dish);
 
-
-
+    /**
+     * 分页查询菜品
+     */
     Page<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
+
+    List<Dish> list(Dish dish);
 
     Dish getByDishId(Long id);
 
@@ -43,5 +46,5 @@ public interface DishMapper {
     @AutoFill(OperationType.UPDATE)
     void update(Dish dish);
 
-
+    List<Dish> getBySetmealId(Long id);
 }

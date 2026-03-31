@@ -71,7 +71,7 @@ public class DishServiceImpl implements DishService {
 
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
         //map list cast to Page
-
+        // 执行查询，返回Page对象
         Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
 
         return new PageResult(page.getTotal(), page.getResult());
@@ -112,9 +112,12 @@ public class DishServiceImpl implements DishService {
 
         List<DishFlavor> dishFlavors =  dishFlavorMapper.getByDishId(id);
 
-
         DishVO dishVO = new DishVO();
         BeanUtils.copyProperties(dish, dishVO);
+
+
+
+
         dishVO.setFlavors(dishFlavors);
 
         return dishVO;
@@ -168,11 +171,26 @@ public class DishServiceImpl implements DishService {
         }
     }
 
+
+    /**
+     * 根据分类ID查询菜品列表（用于前端选择菜品）
+     * @param categoryId 分类ID
+     * @return 菜品列表
+     */
+    /**
+     * 根据分类ID查询菜品列表（用于前端选择菜品）
+     */
     @Override
-    public void startOrStop(Integer status, Long id) {
+    public List<Dish> list(Long categoryId) {
+        // 构建查询条件
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)  // 只查询起售的菜品
+                .build();
 
-
-        Dish dish = Dish.builder().id(id).status(status).build();
-        dishMapper.update(dish);
+        return dishMapper.list(dish);
     }
+
+
+
 }
