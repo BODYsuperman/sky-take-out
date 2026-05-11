@@ -9,6 +9,7 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.service.ShoppingCartService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 
@@ -29,46 +31,48 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public void addShoppingCart(ShoppingCartDTO shoppingCartDTO) {
+        // ===== 1. 构建查询条件（单独对象，绝不复用）=====
+        ShoppingCart queryCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO, queryCart);
+        queryCart.setUserId(BaseContext.getCurrentId());
 
+        // ===== 2. 查询是否已存在 =====
+        List<ShoppingCart> shoppingCartsList = shoppingCartMapper.list(queryCart);
 
-        ShoppingCart shoppingCart = new ShoppingCart();
+        // ===== 3. 存在 → 数量 +1 =====
+        if (shoppingCartsList != null && !shoppingCartsList.isEmpty()) {
+            ShoppingCart existCart = shoppingCartsList.get(0);
+            existCart.setNumber(existCart.getNumber() + 1);
 
-        //shallow copy
-        BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+            log.info("id={}", existCart.getId());
+            log.info("number={}", existCart.getNumber());
+            shoppingCartMapper.updateNumberById(existCart);
 
-        shoppingCart.setUserId(BaseContext.getCurrentId());
+            return;
+        }
+        // ===== 4. 不存在 → 新增 =====
+        else {
+            ShoppingCart shoppingCart = new ShoppingCart(); // 全新对象
+            BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
+            shoppingCart.setUserId(BaseContext.getCurrentId());
 
-        List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
-
-        //already exists shopping items
-        if(shoppingCartList!= null && shoppingCartList.size() > 0){
-
-            shoppingCart = shoppingCartList.get(0);
-            shoppingCart.setNumber(shoppingCart.getNumber() + 1);
-            shoppingCartMapper.updateNumberById(shoppingCart);
-
-        }else{
-            //如果不存在，插入数据
             Long dishId = shoppingCartDTO.getDishId();
             if (dishId != null) {
-//                添加到购物车的是菜品
                 Dish dish = dishMapper.getByDishId(dishId);
                 shoppingCart.setName(dish.getName());
                 shoppingCart.setImage(dish.getImage());
                 shoppingCart.setAmount(dish.getPrice());
             } else {
-//                添加到购物车的是套餐
                 Setmeal setmeal = setmealMapper.getById(shoppingCartDTO.getSetmealId());
                 shoppingCart.setName(setmeal.getName());
                 shoppingCart.setImage(setmeal.getImage());
                 shoppingCart.setAmount(setmeal.getPrice());
             }
+
             shoppingCart.setNumber(1);
             shoppingCart.setCreateTime(LocalDateTime.now());
             shoppingCartMapper.insert(shoppingCart);
         }
-
-
     }
 
     @Override
