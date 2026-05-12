@@ -10,6 +10,7 @@ import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -118,5 +119,21 @@ public class PayNotifyController {
         response.setHeader("Content-type", ContentType.APPLICATION_JSON.toString());
         response.getOutputStream().write(JSONUtils.toJSONString(map).getBytes(StandardCharsets.UTF_8));
         response.flushBuffer();
+    }
+
+    @PostMapping("/pay")
+    public String payNotify(HttpServletRequest request) {
+
+        log.info("pay successfully!");
+        // 处理支付成功回调
+        return "SUCCESS";  // 必须返回 SUCCESS 给微信
+    }
+
+    @PostMapping("/refund")
+    public String refundNotify(HttpServletRequest request) {
+
+
+        // 处理退款回调
+        return "SUCCESS";
     }
 }
