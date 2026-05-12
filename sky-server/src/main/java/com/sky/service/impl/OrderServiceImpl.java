@@ -132,29 +132,31 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
-//        当前登录用户id
-        Long userId = BaseContext.getCurrentId();
-        User user = userMapper.getById(String.valueOf(userId));
+////        当前登录用户id
+//        Long userId = BaseContext.getCurrentId();
+//        User user = userMapper.getById(String.valueOf(userId));
+//
+//        String orderNumber = ordersPaymentDTO.getOrderNumber();
+//        Orders orders = orderMapper.getByNumberAndUserId(orderNumber, userId);
+//
+////        调用微信支付接口，生成预支付交易单
+//        JSONObject jsonObject = weChatPayUtil.pay(
+//                ordersPaymentDTO.getOrderNumber(),
+//                orders.getAmount(),
+//                "苍穹外卖订单" + orders.getId(),
+//                user.getOpenid()
+//        );
+//
+//        if (jsonObject.getString("code") != null && jsonObject.getString("code").equals("ORDERPAID")) {
+//            throw new OrderBusinessException("该订单已支付");
+//        }
+//
+//        OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
+//        vo.setPackageStr(jsonObject.getString("package"));
 
-        String orderNumber = ordersPaymentDTO.getOrderNumber();
-        Orders orders = orderMapper.getByNumberAndUserId(orderNumber, userId);
 
-//        调用微信支付接口，生成预支付交易单
-        JSONObject jsonObject = weChatPayUtil.pay(
-                ordersPaymentDTO.getOrderNumber(),
-                orders.getAmount(),
-                "苍穹外卖订单" + orders.getId(),
-                user.getOpenid()
-        );
-
-        if (jsonObject.getString("code") != null && jsonObject.getString("code").equals("ORDERPAID")) {
-            throw new OrderBusinessException("该订单已支付");
-        }
-
-        OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
-        vo.setPackageStr(jsonObject.getString("package"));
-
-        return vo;
+        paySuccess(ordersPaymentDTO.getOrderNumber());
+        return new OrderPaymentVO();
     }
 
     /**
