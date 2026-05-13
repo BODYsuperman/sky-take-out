@@ -488,8 +488,15 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void complete(Long id) {
+
+        log.info("complete 方法接收到的订单id：{}", id);
 //        根据id查询订单
         Orders orderDB = orderMapper.getById(id);
+
+        log.info("查询到的订单：{}", orderDB);
+        if (orderDB != null) {
+            log.info("订单状态：{}", orderDB.getStatus());
+        }
 
 //        校验订单是否存在，并且状态为4
         if (orderDB == null || !orderDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
@@ -497,10 +504,10 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Orders orders = new Orders();
-        orders.setId(orders.getId());
+        orders.setId(orderDB.getId());
 
 //        更新订单状态，状态转为完成
-        orders.setStatus(Orders.CONFIRMED);
+        orders.setStatus(Orders.COMPLETED);
         orders.setDeliveryTime(LocalDateTime.now());
 
         orderMapper.update(orders);

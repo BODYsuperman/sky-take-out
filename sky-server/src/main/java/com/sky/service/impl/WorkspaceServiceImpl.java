@@ -95,6 +95,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     public OrderOverViewVO getOrderOverView() {
         Map map = new HashMap();
         map.put("begin", LocalDateTime.now().with(LocalTime.MIN));
+        map.put("end", LocalDateTime.now().with(LocalTime.MAX));
         map.put("status", Orders.TO_BE_CONFIRMED);
 
         //待接单
@@ -113,7 +114,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         Integer cancelledOrders = orderMapper.countByMap(map);
 
         //全部订单
-        map.put("status", null);
+        map.remove("status");
         Integer allOrders = orderMapper.countByMap(map);
 
         return OrderOverViewVO.builder()

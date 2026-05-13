@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class ReportServiceImpl implements ReportService
-{
+@Slf4j
+public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private OrderMapper orderMapper;
@@ -42,7 +42,13 @@ public class ReportServiceImpl implements ReportService
     @Autowired
     private WorkspaceService workspaceService;
 
-
+    /**
+     * 根据时间区间统计营业额
+     *
+     * @param begin
+     * @param end
+     * @return
+     */
     @Override
     public TurnoverReportVO getTurnover(LocalDate begin, LocalDate end) {
         List<LocalDate> dateList = new ArrayList<>();
@@ -74,7 +80,6 @@ public class ReportServiceImpl implements ReportService
                 .turnoverList(StringUtils.join(turnoverList, ","))
                 .build();
     }
-
 
     /**
      * 根据时间区间统计用户数量
@@ -201,37 +206,79 @@ public class ReportServiceImpl implements ReportService
     public void exportBusinessData(HttpServletResponse response) {
         LocalDate begin = LocalDate.now().minusDays(30);
         LocalDate end = LocalDate.now().minusDays(1);
-        //查询概览运营数据，提供给Excel模板文件
-        BusinessDataVO businessData = workspaceService.getBusinessData(LocalDateTime.of(begin,LocalTime.MIN), LocalDateTime.of(end, LocalTime.MAX));
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
-        try {
-            //基于提供好的模板文件创建一个新的Excel表格对象
-            XSSFWorkbook excel = new XSSFWorkbook(inputStream);
-            //获得Excel文件中的一个Sheet页
-            XSSFSheet sheet = excel.getSheet("Sheet1");
 
-            sheet.getRow(1).getCell(1).setCellValue(begin + "至" + end);
-            //获得第4行
-            XSSFRow row = sheet.getRow(3);
-            //获取单元格
-            row.getCell(2).setCellValue(businessData.getTurnover());
-            row.getCell(4).setCellValue(businessData.getOrderCompletionRate());
-            row.getCell(6).setCellValue(businessData.getNewUsers());
-            row = sheet.getRow(4);
-            row.getCell(2).setCellValue(businessData.getValidOrderCount());
-            row.getCell(4).setCellValue(businessData.getUnitPrice());
+        try {
+            //创建新的Excel工作簿
+            XSSFWorkbook excel = new XSSFWorkbook();
+            XSSFSheet sheet = excel.createSheet("运营数据报表");
+
+            //创建标题行
+            XSSFRow titleRow = sheet.createRow(0);
+            titleRow.createCell(0).setCellValue("运营数据报表");
+
+            //创建时间范围行
+            XSSFRow dateRow = sheet.createRow(1);
+            dateRow.createCell(0).setCellValue("时间范围");
+            dateRow.createCell(1).setCellValue(begin + " 至 " + end);
+
+            //空行
+            sheet.createRow(2);
+
+            //查询概览运营数据
+            BusinessDataVO businessData = workspaceService.getBusinessData(
+                    LocalDateTime.of(begin, LocalTime.MIN),
+                    LocalDateTime.of(end, LocalTime.MAX));
+
+            //创建概览数据标题行
+            XSSFRow overviewTitleRow = sheet.createRow(3);
+            overviewTitleRow.createCell(0).setCellValue("概览数据");
+
+            //创建概览数据行
+            XSSFRow row4 = sheet.createRow(4);
+            row4.createCell(0).setCellValue("营业额");
+            row4.createCell(1).setCellValue(businessData.getTurnover());
+            row4.createCell(2).setCellValue("订单完成率");
+            row4.createCell(3).setCellValue(businessData.getOrderCompletionRate());
+            row4.createCell(4).setCellValue("新增用户");
+            row4.createCell(5).setCellValue(businessData.getNewUsers());
+
+            XSSFRow row5 = sheet.createRow(5);
+            row5.createCell(0).setCellValue("有效订单数");
+            row5.createCell(1).setCellValue(businessData.getValidOrderCount());
+            row5.createCell(2).setCellValue("平均客单价");
+            row5.createCell(3).setCellValue(businessData.getUnitPrice());
+
+            //空行
+            sheet.createRow(6);
+
+            //创建明细数据标题行
+            XSSFRow detailTitleRow = sheet.createRow(7);
+            detailTitleRow.createCell(0).setCellValue("日期");
+            detailTitleRow.createCell(1).setCellValue("营业额");
+            detailTitleRow.createCell(2).setCellValue("有效订单数");
+            detailTitleRow.createCell(3).setCellValue("订单完成率");
+            detailTitleRow.createCell(4).setCellValue("平均客单价");
+            detailTitleRow.createCell(5).setCellValue("新增用户数");
+
+            //填充明细数据
             for (int i = 0; i < 30; i++) {
                 LocalDate date = begin.plusDays(i);
-                //准备明细数据
-                businessData = workspaceService.getBusinessData(LocalDateTime.of(date,LocalTime.MIN), LocalDateTime.of(date, LocalTime.MAX));
-                row = sheet.getRow(7 + i);
-                row.getCell(1).setCellValue(date.toString());
-                row.getCell(2).setCellValue(businessData.getTurnover());
-                row.getCell(3).setCellValue(businessData.getValidOrderCount());
-                row.getCell(4).setCellValue(businessData.getOrderCompletionRate());
-                row.getCell(5).setCellValue(businessData.getUnitPrice());
-                row.getCell(6).setCellValue(businessData.getNewUsers());
+                BusinessDataVO dailyData = workspaceService.getBusinessData(
+                        LocalDateTime.of(date, LocalTime.MIN),
+                        LocalDateTime.of(date, LocalTime.MAX));
+                XSSFRow dataRow = sheet.createRow(8 + i);
+                dataRow.createCell(0).setCellValue(date.toString());
+                dataRow.createCell(1).setCellValue(dailyData.getTurnover());
+                dataRow.createCell(2).setCellValue(dailyData.getValidOrderCount());
+                dataRow.createCell(3).setCellValue(dailyData.getOrderCompletionRate());
+                dataRow.createCell(4).setCellValue(dailyData.getUnitPrice());
+                dataRow.createCell(5).setCellValue(dailyData.getNewUsers());
             }
+
+            //设置响应头
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment; filename=运营数据报表.xlsx");
+
             //通过输出流将文件下载到客户端浏览器中
             ServletOutputStream out = response.getOutputStream();
             excel.write(out);
@@ -240,8 +287,9 @@ public class ReportServiceImpl implements ReportService
             out.close();
             excel.close();
 
-        }catch (IOException e){
-            e.printStackTrace();
+        } catch (IOException e) {
+            log.error("导出运营数据报表失败", e);
+            throw new RuntimeException("导出运营数据报表失败", e);
         }
     }
 
